@@ -1,3 +1,6 @@
 *.o
 *.mk
 *.project
+.codelite
+*.workspace
+build-Debug
