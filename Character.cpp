@@ -22,7 +22,7 @@ void ACharacter::Update(sf::Time ElapsedTime)
     {
         Accelerate();
     }
-    if (CurrentSpeed > 0.f)
+    if (VelocityX != 0.f || VelocityY != 0.f)
     {
         Move();
     }
@@ -53,33 +53,24 @@ void ACharacter::Update(sf::Time ElapsedTime)
 
 void ACharacter::Accelerate()
 {
-    CurrentSpeed = CurrentSpeed + (Acceleration*ElapsedTime.asSeconds());
-    
-    if (CurrentSpeed > MaxSpeed)
-    {
-        CurrentSpeed = MaxSpeed;
-    }
+    float RotationRad = Shape.getRotation() * M_PI /180;
+
+    VelocityX += cos(RotationRad) * Acceleration * ElapsedTime.asSeconds();
+    VelocityY += sin(RotationRad) * Acceleration * ElapsedTime.asSeconds();
 }
 
 void ACharacter::Move()
 {
-    float RotationRad = Shape.getRotation() * M_PI /180;
-
-    float VelocityX = cos(RotationRad) * CurrentSpeed;
-    float VelocityY = sin(RotationRad) * CurrentSpeed;
-
     Shape.move(VelocityX, VelocityY);
 }
 
 
 void ACharacter::Brake()
 {
-    CurrentSpeed = CurrentSpeed - (Acceleration*ElapsedTime.asSeconds());
-    
-    if (CurrentSpeed < MinSpeed)
-    {
-        CurrentSpeed = MinSpeed;
-    }
+    float RotationRad = Shape.getRotation() * M_PI /180;
+
+    VelocityX -= cos(RotationRad) * BrakeAcceleration * ElapsedTime.asSeconds();
+    VelocityY -= sin(RotationRad) * BrakeAcceleration * ElapsedTime.asSeconds();
 }
 
 void ACharacter::Rotate(float Angle)

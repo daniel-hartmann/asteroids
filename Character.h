@@ -23,6 +23,7 @@ private:
     const float MinSpeed = 0.2f;
     const float MaxSpeed = 5.f;
     const float RotationSpeed = 2.f;
-    float CurrentSpeed = 0.f;
+    float VelocityX = 0.f;
+    float VelocityY = 0.f;
     sf::Time ElapsedTime;
 };
