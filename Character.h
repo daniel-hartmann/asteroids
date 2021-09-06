@@ -27,7 +27,7 @@ private:
     const float BrakeAcceleration = 0.9f;
     const float MinSpeed = 0.2f;
     const float MaxSpeed = 4.5f;
-    const float RotationSpeed = 2.f;
+    const float RotationSpeed = 50.f;
     const float MaxDamage = 1000.f;
     int Damage = 0.f;
     float FireTime = 0.f;
