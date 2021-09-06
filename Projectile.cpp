@@ -3,16 +3,14 @@
 AProjectile::AProjectile(sf::Vector2f InitialPosition, float Rotation)
 {
     Shape.setSize(sf::Vector2f(1.f, 2.f));
-    
-    // Set random position and rotation
-//    float PositionX = RandomFloat(0.f, 800.f);
-//    float PositionY = -MaxRadius;
     Shape.setPosition(InitialPosition);
     Shape.setRotation(Rotation);
-
     Shape.setFillColor(sf::Color(255, 255, 255));
-    
-    // TODO: set time of life
+}
+
+AProjectile::~AProjectile()
+{
+//    cout << "Projectile is dead" << endl;
 }
 
 void AProjectile::Move()
@@ -23,4 +21,12 @@ void AProjectile::Move()
     float VelocityY = sin(RotationRad) * Speed;
 
     Shape.move(VelocityX, VelocityY);
+}
+
+bool AProjectile::IsOutOfWindow(int WindowWidth, int WindowHeight)
+{
+    return Shape.getPosition().x > WindowWidth ||
+        Shape.getPosition().x < 0.f ||
+        Shape.getPosition().y > WindowHeight ||
+        Shape.getPosition().y < 0.f;
 }

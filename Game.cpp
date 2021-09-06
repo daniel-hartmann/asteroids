@@ -4,8 +4,7 @@
 AGame::AGame()
 {
     Window.create(sf::VideoMode(WindowWidth, WindowHeight), "Asteroids");
-    //Window.create(sf::VideoMode(1920, 1080), "Asteroids");
-//    Window.setFramerateLimit(60); // dont use with vsync
+    //Window.setFramerateLimit(60); // dont use with vsync
     Window.setVerticalSyncEnabled(true);
     Ship = new ACharacter();
 }
@@ -42,10 +41,17 @@ void AGame::Update()
         if (Ship->Shape.getGlobalBounds().intersects(
             Asteroids[i]->Shape.getGlobalBounds()))
         {
-            cout << "Ship collided" << endl;
-            cout << "Asteroid position:" << endl;
-            cout << "X: " << Asteroids[i]->Shape.getPosition().x;
-            cout << "Y: " << Asteroids[i]->Shape.getPosition().y << endl;
+//            cout << "Ship collided" << endl;
+//            cout << "Asteroid position:" << endl;
+//            cout << "X: " << Asteroids[i]->Shape.getPosition().x;
+//            cout << "Y: " << Asteroids[i]->Shape.getPosition().y << endl;
+        }
+        
+        if (Asteroids[i]->bDestroyed ||
+            Asteroids[i]->IsOutOfWindow(WindowWidth, WindowHeight))
+        {
+            delete Asteroids[i];
+            Asteroids.erase(next(Asteroids.begin(), i));
         }
     }
     
@@ -59,47 +65,56 @@ void AGame::Update()
             if (Ship->Projectiles[PIndex]->Shape.getGlobalBounds().intersects(
                 Asteroids[AIndex]->Shape.getGlobalBounds()))
             {
-                cout << "Projectile collided" << endl;
                 Asteroids[AIndex]->Damage();
                 Ship->Projectiles[PIndex]->bDestroyed = true;
                 
-                if (Asteroids[AIndex]->bDestroyed)
+                if (!Asteroids[AIndex]->bDestroyed && (Asteroids[AIndex]->GetRadius()) >= Asteroids[AIndex]->MinRadius)
                 {
-                    Asteroids.erase(next(Asteroids.begin(), AIndex));
-//                    delete Asteroids[AIndex];
+                    Asteroids[AIndex]->Shape.rotate(30);
+                    
+                    Asteroids.push_back(new AAsteroid(
+                        Asteroids[AIndex]->Shape.getPosition(),
+                        Asteroids[AIndex]->Shape.getRotation()-30,
+                        Asteroids[AIndex]->GetRadius(),
+                        Asteroids[AIndex]->GetSpeed(),
+                        Asteroids[AIndex]->GetColor()
+                        ));
                 }
+                break;
             }
         }
         
-        if (Ship->Projectiles[PIndex]->bDestroyed)
+        if (Ship->Projectiles[PIndex]->bDestroyed ||
+            Ship->Projectiles[PIndex]->IsOutOfWindow(WindowWidth, WindowHeight))
         {
+            delete Ship->Projectiles[PIndex];
             Ship->Projectiles.erase(next(Ship->Projectiles.begin(), PIndex));
-//            delete Ship->Projectiles[PIndex];
         }
     }
     
     // Check window bounds
     sf::Vector2f ShipPosition = Ship->Shape.getPosition();
+    sf::Vector2f NewShipPosition(ShipPosition.x, ShipPosition.y);
     float bPositionChanged = false;
     
-    if (ShipPosition.x > static_cast<float>(WindowWidth))
+    if (ShipPosition.x > (WindowWidth + Ship->Height))
     {
-        ShipPosition.x = 0.f;
+        ShipPosition.x = -Ship->Height;
         bPositionChanged = true;
     }
-    else if (ShipPosition.x < 0.f)
+    else if (ShipPosition.x < -Ship->Height)
     {
-        ShipPosition.x = static_cast<float>(WindowWidth);
+        ShipPosition.x = static_cast<float>(WindowWidth) + Ship->Height;
         bPositionChanged = true;
     }
-    if (ShipPosition.y > static_cast<float>(WindowHeight))
+    if (ShipPosition.y > (WindowHeight + Ship->Height))
     {
-        ShipPosition.y = 0.f;
+        ShipPosition.y = -Ship->Height;
         bPositionChanged = true;
     }
-    else if (ShipPosition.y < 0.f)
+    else if (ShipPosition.y < -Ship->Height)
     {
-        ShipPosition.y = static_cast<float>(WindowHeight);
+        ShipPosition.y = static_cast<float>(WindowHeight) + Ship->Height;
         bPositionChanged = true;
     }
     
@@ -113,19 +128,18 @@ void AGame::Draw(sf::Clock& AsteroidClock)
 {
     Window.draw(Ship->Shape);
 
-    if ((Asteroids.size() == 0) || AsteroidClock.getElapsedTime().asSeconds() > RandomInt(1, 4))
+    if ((Asteroids.size() == 0) || AsteroidClock.getElapsedTime().asSeconds() > RandomInt(AsteroidFreqMin, AsteroidFreqMax))
     {
-        cout << "Create another asteroid" << endl;
         Asteroids.push_back(new AAsteroid());
         AsteroidClock.restart();
     }
 
-    for (long unsigned int i=0; i<Ship->Projectiles.size(); i++)
+    for (long unsigned int i=0; i < Ship->Projectiles.size(); i++)
     {
         Window.draw(Ship->Projectiles[i]->Shape);
     }
 
-    for (long unsigned int i=0; i<Asteroids.size(); i++)
+    for (long unsigned int i=0; i < Asteroids.size(); i++)
     {
         Window.draw(Asteroids[i]->Shape);
     }

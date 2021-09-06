@@ -14,6 +14,8 @@ public:
 private:
     const int WindowWidth = 800;
     const int WindowHeight = 600;
+    const int AsteroidFreqMin = 1;
+    const int AsteroidFreqMax = 4;
     sf::RenderWindow Window;
     void Draw(sf::Clock& AsteroidClock);
     void HandleEvent(sf::Event SystemEvent);

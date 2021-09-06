@@ -5,9 +5,11 @@ class AProjectile: public Base
 {
 public:
     AProjectile(sf::Vector2f InitialPosition, float Rotation);
+    ~AProjectile();
     sf::RectangleShape Shape;
     void Move();
     bool bDestroyed = false;
+    bool IsOutOfWindow(int WindowWidth, int WindowHeight);
 
 private:
 
