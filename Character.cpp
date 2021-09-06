@@ -14,6 +14,29 @@ ACharacter::ACharacter()
     Shape.rotate(-90);
 }
 
+void ACharacter::Collision(int Damage, float Speed, float Rotation)
+{
+    this->Damage += Damage;
+
+    float RotationRad = -Rotation * M_PI /180;
+
+    VelocityX += cos(RotationRad) * (Speed/30.f);
+    VelocityY += sin(RotationRad) * (Speed/30.f);
+    
+    if (((VelocityX*VelocityX) + (VelocityY+VelocityY)) > MaxSpeed * MaxSpeed)
+    {
+        VelocityX = cos(RotationRad) * MaxSpeed;
+        VelocityY = sin(RotationRad) * MaxSpeed;
+    }
+    
+    Shape.rotate(1);
+}
+
+int ACharacter::GetDamage()
+{
+    return Damage;
+}
+
 void ACharacter::Update(sf::Time ElapsedTime)
 {
     this->ElapsedTime = ElapsedTime;
@@ -75,8 +98,8 @@ void ACharacter::Brake()
 {
     float RotationRad = Shape.getRotation() * M_PI /180;
 
-    VelocityX -= cos(RotationRad) * BrakeAcceleration * ElapsedTime.asSeconds();
-    VelocityY -= sin(RotationRad) * BrakeAcceleration * ElapsedTime.asSeconds();
+    VelocityX += cos(RotationRad) * -BrakeAcceleration * ElapsedTime.asSeconds();
+    VelocityY += sin(RotationRad) * -BrakeAcceleration * ElapsedTime.asSeconds();
 }
 
 void ACharacter::Rotate(float Angle)

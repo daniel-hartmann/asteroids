@@ -11,8 +11,10 @@ public:
     void Move();
     void Damage();
     float GetRadius();
-    void SetRadius(float Radius);
     float GetSpeed();
+    float GetRotation();
+
+    void SetRadius(float Radius);
     void SetSpeed(float Speed);
     bool bDestroyed = false;
     const float MinRadius = 10.f;
@@ -22,7 +24,7 @@ public:
 private:
     const float MaxRadius = 80.f;
     const float DamageRadius = 2.5f;
-    const float MaxSpeed = 4.f;
+    const float MaxSpeed = 3.f;
     const float DamageSpeedRatio = 1.5f;
     float Radius;
     float Speed;

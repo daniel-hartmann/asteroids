@@ -7,6 +7,23 @@ AGame::AGame()
     //Window.setFramerateLimit(60); // dont use with vsync
     Window.setVerticalSyncEnabled(true);
     Ship = new ACharacter();
+
+    if (!MainFont.loadFromFile("res/Montserrat-Bold.ttf"))
+    {
+        perror("Couldn't load the font file.");
+    }
+    else
+    {
+        GameScoreText.setFont(MainFont);
+        DamageScoreText.setFont(MainFont);
+    }
+    GameScoreText.setCharacterSize(20);
+    GameScoreText.setFillColor(sf::Color::White);
+    GameScoreText.setStyle(sf::Text::Bold);
+ 
+    DamageScoreText.setCharacterSize(20);
+    DamageScoreText.setFillColor(sf::Color::White);
+    DamageScoreText.setStyle(sf::Text::Bold);
 }
 
 void AGame::Start()
@@ -27,6 +44,7 @@ void AGame::Start()
         // Clear before drawing
         Window.clear();
         Draw(AsteroidClock);
+        DrawText();
         Window.display();
     }
 }
@@ -41,10 +59,7 @@ void AGame::Update()
         if (Ship->Shape.getGlobalBounds().intersects(
             Asteroids[i]->Shape.getGlobalBounds()))
         {
-//            cout << "Ship collided" << endl;
-//            cout << "Asteroid position:" << endl;
-//            cout << "X: " << Asteroids[i]->Shape.getPosition().x;
-//            cout << "Y: " << Asteroids[i]->Shape.getPosition().y << endl;
+            Ship->Collision(Asteroids[i]->GetRadius(), Asteroids[i]->GetSpeed(), Asteroids[i]->GetRotation());
         }
         
         if (Asteroids[i]->bDestroyed ||
@@ -65,8 +80,11 @@ void AGame::Update()
             if (Ship->Projectiles[PIndex]->Shape.getGlobalBounds().intersects(
                 Asteroids[AIndex]->Shape.getGlobalBounds()))
             {
+                float OldRadius = Asteroids[AIndex]->GetRadius();
                 Asteroids[AIndex]->Damage();
                 Ship->Projectiles[PIndex]->bDestroyed = true;
+                
+                GameScore += (OldRadius - Asteroids[AIndex]->GetRadius());
                 
                 if (!Asteroids[AIndex]->bDestroyed && (Asteroids[AIndex]->GetRadius()) >= Asteroids[AIndex]->MinRadius)
                 {
@@ -143,6 +161,20 @@ void AGame::Draw(sf::Clock& AsteroidClock)
     {
         Window.draw(Asteroids[i]->Shape);
     }
+}
+
+void AGame::DrawText()
+{
+    GameScoreText.setString("Score: " + to_string(GameScore));
+    sf::FloatRect GameScoreBounds = GameScoreText.getLocalBounds();
+    GameScoreText.setPosition(WindowWidth - GameScoreBounds.width - 20.f, 10.f);
+    
+    DamageScoreText.setString("Damage: " + to_string(Ship->GetDamage()));
+    sf::FloatRect DamageScoreBounds = DamageScoreText.getLocalBounds();
+    DamageScoreText.setPosition(WindowWidth - DamageScoreBounds.width - 20.f, GameScoreBounds.height + 15.f);
+    
+    Window.draw(GameScoreText);
+    Window.draw(DamageScoreText);
 }
 
 void AGame::HandleEvent(sf::Event SystemEvent)

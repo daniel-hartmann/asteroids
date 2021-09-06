@@ -18,6 +18,11 @@ private:
     const int AsteroidFreqMax = 4;
     sf::RenderWindow Window;
     void Draw(sf::Clock& AsteroidClock);
+    void DrawText();
     void HandleEvent(sf::Event SystemEvent);
     void Update();
+    sf::Font MainFont;
+    sf::Text GameScoreText;
+    sf::Text DamageScoreText;
+    int GameScore = 0.f;
 };

@@ -88,6 +88,11 @@ void AAsteroid::SetSpeed(float Speed)
     this->Speed = Speed;
 }
 
+float AAsteroid::GetRotation()
+{
+    return Shape.getRotation();
+}
+
 bool AAsteroid::IsOutOfWindow(int WindowWidth, int WindowHeight)
 {
     return (Shape.getPosition().x - Radius) > WindowWidth ||
