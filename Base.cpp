@@ -1,6 +1,15 @@
 #include "Base.h"
 #include <random>
 
+Base::Base()
+{
+    if (!MainFont.loadFromFile("res/Montserrat-Bold.ttf"))
+    {
+        perror("Couldn't load the font file.");
+        exit(0);
+    }
+}
+
 void Base::Log(string Message)
 {
     std::cout << "[DEBUG] " << Message << std::endl;

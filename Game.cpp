@@ -1,22 +1,20 @@
 
 #include "Game.h"
+#include "Menu.h"
 
 AGame::AGame()
 {
-    Window.create(sf::VideoMode(WindowWidth, WindowHeight), "Asteroids");
+    sf::ContextSettings settings;
+	settings.antialiasingLevel = 8;
+    Window.create(sf::VideoMode(WindowWidth, WindowHeight), "Asteroids", sf::Style::Default, settings);
     //Window.setFramerateLimit(60); // dont use with vsync
     Window.setVerticalSyncEnabled(true);
     Ship = new ACharacter();
 
-    if (!MainFont.loadFromFile("res/Montserrat-Bold.ttf"))
-    {
-        perror("Couldn't load the font file.");
-    }
-    else
-    {
-        GameScoreText.setFont(MainFont);
-        DamageScoreText.setFont(MainFont);
-    }
+    
+    GameScoreText.setFont(MainFont);
+    DamageScoreText.setFont(MainFont);
+
     GameScoreText.setCharacterSize(20);
     GameScoreText.setFillColor(sf::Color::White);
     GameScoreText.setStyle(sf::Text::Bold);
@@ -30,22 +28,50 @@ void AGame::Start()
 {
     sf::Clock CharacterClock;
     sf::Clock AsteroidClock;
+    AMenu Menu(CurrentState);
     while (Window.isOpen())
     {
-        Ship->Update(CharacterClock.restart());
-        Update();
-
         sf::Event SystemEvent;
-        while (Window.pollEvent(SystemEvent))
-        {
-            HandleEvent(SystemEvent);
-        }
 
-        // Clear before drawing
-        Window.clear();
-        Draw(AsteroidClock);
-        DrawText();
-        Window.display();
+        switch(CurrentState)
+        {
+            case STATE_MAIN_MENU:
+                Menu.Update(Window);
+
+                while (Window.pollEvent(SystemEvent))
+                {
+                    HandleEvent(SystemEvent);
+                }
+                
+                Window.clear();
+                Menu.Draw(Window);
+                Window.display();
+                break;
+
+            case STATE_PLAYING:
+                Ship->Update(CharacterClock.restart());
+                Update();
+
+                while (Window.pollEvent(SystemEvent))
+                {
+                    HandleEvent(SystemEvent);
+                }
+
+                // Clear before drawing
+                Window.clear();
+                Draw(AsteroidClock);
+                DrawText();
+                Window.display();
+                break;
+
+            case STATE_STATS:
+            case STATE_PAUSE:
+            case STATE_EXIT:
+            default:
+                break;
+        }
+        
+        
     }
 }
 
@@ -56,11 +82,7 @@ void AGame::Update()
     {
         Asteroids[i]->Move();
 
-        if (Ship->Shape.getGlobalBounds().intersects(
-            Asteroids[i]->Shape.getGlobalBounds()))
-        {
-            Ship->Collision(Asteroids[i]->GetRadius(), Asteroids[i]->GetSpeed(), Asteroids[i]->GetRotation());
-        }
+        Ship->CheckCollision(Asteroids[i]);
         
         if (Asteroids[i]->bDestroyed ||
             Asteroids[i]->IsOutOfWindow(WindowWidth, WindowHeight))
@@ -180,7 +202,7 @@ void AGame::DrawText()
 void AGame::HandleEvent(sf::Event SystemEvent)
 {
     if ((SystemEvent.type == sf::Event::Closed) ||
-        (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)))
+        CurrentState == STATE_EXIT)
     {
         Window.close();
     }

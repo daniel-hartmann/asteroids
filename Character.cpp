@@ -14,25 +14,44 @@ ACharacter::ACharacter()
     Shape.rotate(-90);
 }
 
-void ACharacter::Collision(int Damage, float Speed, float Rotation)
+bool ACharacter::IsDead()
 {
-    this->Damage += Damage;
-
-    float RotationRad = Rotation * M_PI /180;
-
-    VelocityX += cos(RotationRad) * (Speed/30.f);
-    VelocityY += sin(RotationRad) * (Speed/30.f);
-    
-    if (VelocityX > MaxSpeed)
+    if (Damage >= MaxDamage)
     {
-        VelocityX = MaxSpeed;
+        return true;
     }
-    if (VelocityY > MaxSpeed)
+    return false;
+}
+
+void ACharacter::CheckCollision(AAsteroid *Asteroid)
+{
+    if (this->Shape.getGlobalBounds().intersects(
+            Asteroid->Shape.getGlobalBounds()))
     {
-        VelocityY = MaxSpeed;
+        bColliding = true;
+
+        this->Damage += Asteroid->GetRadius();
+
+//        float RotationRad = Asteroid->GetRotation() * M_PI /180;
+//
+//        VelocityX += cos(RotationRad) * (Asteroid->GetSpeed()/30.f);
+//        VelocityY += sin(RotationRad) * (Asteroid->GetSpeed()/30.f);
+//        
+//        if (VelocityX > MaxSpeed)
+//        {
+//            VelocityX = MaxSpeed;
+//        }
+//        if (VelocityY > MaxSpeed)
+//        {
+//            VelocityY = MaxSpeed;
+//        }
+        
+//        Shape.rotate(2);
     }
-    
-    Shape.rotate(2);
+    else
+    {
+        bColliding = false;
+    }
 }
 
 int ACharacter::GetDamage()
@@ -102,7 +121,10 @@ void ACharacter::Accelerate()
 
 void ACharacter::Move()
 {
-    Shape.move(VelocityX, VelocityY);
+    if (!bColliding)
+    {
+        Shape.move(VelocityX, VelocityY);
+    }
 }
 
 

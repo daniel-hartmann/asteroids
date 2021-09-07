@@ -3,6 +3,15 @@
 #include "Asteroid.h"
 #include "Character.h"
 
+enum State
+{
+    STATE_MAIN_MENU,
+    STATE_PLAYING,
+    STATE_STATS,
+    STATE_PAUSE,
+    STATE_EXIT
+};
+
 class AGame: Base
 {
 public:
@@ -10,6 +19,7 @@ public:
     void Start();
     ACharacter* Ship;
     vector<AAsteroid*> Asteroids;
+    State CurrentState = STATE_MAIN_MENU;
 
 private:
     const int WindowWidth = 800;
@@ -21,7 +31,6 @@ private:
     void DrawText();
     void HandleEvent(sf::Event SystemEvent);
     void Update();
-    sf::Font MainFont;
     sf::Text GameScoreText;
     sf::Text DamageScoreText;
     int GameScore = 0.f;

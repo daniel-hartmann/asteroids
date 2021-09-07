@@ -11,8 +11,12 @@ using namespace std;
 
 class Base
 {
+public:
+    Base();
+
 protected:
     void Log(string Message);
     float RandomFloat(float Min, float Max);
     int RandomInt(int Min, int Max);
+    sf::Font MainFont;
 };

@@ -1,5 +1,6 @@
 #pragma once
 #include "Base.h"
+#include "Asteroid.h"
 #include "Projectile.h"
 
 using namespace std;
@@ -14,10 +15,11 @@ public:
     void Accelerate();
     void Move();
     void Brake();
-    void Collision(int Damage, float Speed, float Rotation);
+    void CheckCollision(AAsteroid *Asteroid);
     void Update(sf::Time ElapsedTime);
     vector<AProjectile*> Projectiles;
     int GetDamage();
+    bool IsDead();
     
     const float Width = 30.f;
     const float Height = 45.f;
@@ -27,7 +29,7 @@ private:
     const float BrakeAcceleration = 0.9f;
     const float MinSpeed = 0.2f;
     const float MaxSpeed = 4.5f;
-    const float RotationSpeed = 50.f;
+    const float RotationSpeed = 70.f;
     const float MaxDamage = 1000.f;
     int Damage = 0.f;
     float FireTime = 0.f;
@@ -36,4 +38,5 @@ private:
     float VelocityX = 0.f;
     float VelocityY = 0.f;
     sf::Time ElapsedTime;
+    bool bColliding = false;
 };
